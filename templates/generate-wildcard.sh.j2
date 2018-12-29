@@ -1,0 +1,14 @@
+#!/bin/bash
+
+DOMAIN={{ cert_wildcard_domain }}
+EMAIL={{ cert_wildcard_email }}
+LOGFILE=/opt/ansible/scripts/letsencrypt/log/{{ cert_wildcard_logfile }}
+
+certbot certonly --manual -d *.$DOMAIN \
+--agree-tos -m $EMAIL \
+--no-bootstrap --manual-public-ip-logging-ok \
+--preferred-challenges dns-01 \
+--server https://acme-v02.api.letsencrypt.org/directory \
+>> $LOGFILE
+
+exit 0

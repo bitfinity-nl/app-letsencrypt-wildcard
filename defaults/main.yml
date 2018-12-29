@@ -1,0 +1,23 @@
+---
+  # defaults file for app-letsencrypt-wildcard
+  #
+  # Author: Luc Rutten
+  # File: defaults/main.yml
+  #
+  # Description:
+  #   Generate wildcard certicate
+
+
+  # -- Certbot --
+  #
+  # - Use only your domain name.
+  # - Update your external DNS server with a TXT file and the key you can find in the log file.
+  # 
+  #    
+  # Example: 
+  #    cert_wildcard_domain : 'bitfinity.nl'
+  #
+  cert_wildcard_domain  : 'yourdomain.org'
+  cert_wildcard_email   : 'support@yourdomain.org'
+  cert_wildcard_logfile : 'cert.log'
+  cert_ansible_user     : 'ansible'

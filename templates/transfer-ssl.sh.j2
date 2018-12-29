@@ -1,0 +1,23 @@
+#!/bin/bash
+
+HOST=$1
+DOMAIN={{ cert_wildcard_domain }}
+USER={{ cert_ansible_user }}
+
+# Directory where letsencrypt stores it's certificates
+LIVE_DIR=/etc/letsencrypt/archive/
+
+SOURCE_DIR=/etc/letsencrypt/archive/$DOMAIN
+REMOTE_DIR=/etc/letsencrypt/live/
+
+
+# Change owner to Ansible
+sudo chown ansible $LIVE_DIR
+
+# Transfer keys
+rsync -a -e "ssh" --rsync-path="sudo mkdir -p ${REMOTE_DIR} && sudo rsync" ${SOURCE_DIR} $USER@$HOST:${REMOTE_DIR}
+
+# Revert owner to root
+sudo chown root $LIVE_DIR
+
+exit 0 

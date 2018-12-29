@@ -1,0 +1,66 @@
+---
+  # defaults file for app-letsencrypt-wildcard
+  #
+  # Author: Luc Rutten
+  # File: defaults/main.yml
+  #
+  # Description:
+  #   Generate wildcard certicate
+
+
+  - name: "Add additional repositories"
+    apt_repository:
+      repo: ppa:certbot/certbot
+      state: present
+
+  - name: "Update repositories cache"
+    apt:
+      update_cache: yes
+
+  - name: "Install Additional packages"
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - certbot
+
+  - name: "Create Ansible script directory"
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+      - /opt/ansible
+      - /opt/ansible/scripts
+      - /opt/ansible/scripts/letsencrypt
+      - /opt/ansible/scripts/letsencrypt/log
+
+  - name: "Transfer template to /opt/ansible/scripts/letsencrypt"
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: root
+      group: root
+      mode: 0755
+    with_items:
+      - { src: generate-wildcard.sh.j2, dest: /opt/ansible/scripts/letsencrypt/generate-wildcard.sh }
+      - { src: transfer-ssl.sh.j2, dest: /opt/ansible/scripts/letsencrypt/transfer-ssl.sh } 
+    
+  - name: "Check if /{{ cert_wildcard_logfile}} allreay has been generated"
+    stat:
+      path: "/opt/ansible/scripts/letsencrypt/log/{{ cert_wildcard_logfile}}"
+    register: certlog
+
+#  - name: "Execute generate script"
+#    command: /opt/ansible/scripts/letsencrypt/generate-wildcard.sh
+#    when:
+#      - certlog.stat.exists == False
+ 
+  - name: "Renew server certificat At 08:00 on day-of-month 1"
+    cron:
+      name: "Renew server certificat At 08:00 on day-of-month 1"
+      minute: "0"
+      hour: "8"
+      day: "1"
+      job: "certbot renew > /dev/null"
+      user: root
+      state: present 
