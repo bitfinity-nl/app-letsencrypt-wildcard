@@ -26,9 +26,10 @@
 
   - name: "Create Ansible script directory"
     file:
-      path: "{{ item }}"
+      path: "{{ packages }}"
       state: directory
-    with_items:
+    vars:
+      packages:
       - /opt/ansible
       - /opt/ansible/scripts
       - /opt/ansible/scripts/letsencrypt
